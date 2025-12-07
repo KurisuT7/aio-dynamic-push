@@ -1,0 +1,102 @@
+# ==========================================
+# aio-dynamic-push 配置文件
+# ==========================================
+# 使用说明：
+# 1. 复制此文件并重命名为 config.yml
+# 2. 按照注释填写你的配置信息
+# 3. 使用 Docker 挂载此配置文件启动
+# ==========================================
+
+common:
+  # IP 代理池配置（可选）
+  proxy_pool:
+    # 是否启用代理 true/false
+    enable: false
+    # 代理池地址，格式如：http://127.0.0.1:7890
+    proxy_pool_url: http://ip:port
+
+  # 推送通道全局设置
+  push_channel:
+    # 启动时发送测试消息，用于验证配置是否正确
+    send_test_msg_when_start: true
+
+# ==========================================
+# 监控任务配置
+# ==========================================
+# 支持的任务类型：
+#   - bilibili: B站（动态+直播）
+#   - weibo: 微博（仅动态）
+#   - xhs: 小红书（仅动态）
+#   - douyin: 抖音（仅直播）
+#   - douyu: 斗鱼（仅直播）
+#   - huya: 虎牙（仅直播）
+# ==========================================
+query_task:
+  # ---------- B站监控示例 ----------
+  - name: 任务_bilibili
+    enable: true
+    type: bilibili
+    # 检测间隔（秒），建议不要太频繁以免被封
+    intervals_second: 60
+    # 监控时间段
+    begin_time: "00:00"
+    end_time: "23:59"
+    # 推送到哪些通道（名称需与下方push_channel中的name匹配）
+    target_push_name_list:
+      - 推送通道_Telegram
+    # 是否检测动态更新
+    enable_dynamic_check: true
+    # 是否检测直播开播
+    enable_living_check: true
+    # B站用户UID列表（在用户主页URL中获取）
+    # 例如：https://space.bilibili.com/123456 中的 123456
+    uid_list:
+      - 299013902
+      - 3493269266762688
+    # 是否跳过转发动态
+    skip_forward: true
+    # B站Cookie（可选，某些情况需要登录态）
+    # 获取方法：浏览器登录B站 -> F12开发者工具 -> Network -> 刷新页面 -> 复制Cookie
+    cookie: ""
+    payload: ""
+
+  # ---------- 斗鱼直播监控示例 ----------
+  - name: 任务_douyu
+    enable: true
+    type: douyu
+    intervals_second: 300
+    begin_time: "00:00"
+    end_time: "23:59"
+    target_push_name_list:
+      - 推送通道_Telegram
+    enable_living_check: true
+    # 斗鱼直播间号列表（直播间URL中的数字）
+    # 例如：https://www.douyu.com/123456 中的 123456
+    room_id_list:
+      - 6979222
+      - 12306
+
+# ==========================================
+# 推送通道配置
+# ==========================================
+# 支持的推送类型：
+#   - telegram_bot: Telegram机器人
+#   - wecom_bot: 企业微信群机器人
+#   - dingtalk_bot: 钉钉群机器人
+#   - feishu_bot: 飞书群机器人
+#   - bark: Bark推送（iOS）
+#   - email: 邮件推送
+# ==========================================
+push_channel:
+  # ---------- Telegram 机器人配置 ----------
+  # 配置步骤：
+  # 1. 在Telegram搜索 @BotFather，发送 /newbot 创建机器人
+  # 2. 获取机器人的 API Token
+  # 3. 获取你的 Chat ID：搜索 @userinfobot 发送任意消息即可获取
+  - name: 推送通道_Telegram
+    enable: true
+    type: telegram_bot
+    # 机器人Token（从BotFather获取）
+    api_token: "你的机器人Token"
+    # 接收消息的Chat ID
+    chat_id: "你的ChatID"
